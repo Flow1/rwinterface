@@ -19,7 +19,7 @@ import java.io.DataOutputStream;
 
 public class Engine extends Thread {
 
-	String server;
+	String server; 
 	String portListen;
 	String portWrite;
 	DataInputStream is;
