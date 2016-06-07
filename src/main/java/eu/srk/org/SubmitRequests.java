@@ -57,9 +57,11 @@ class SubmitTestRequests extends Thread {
 		String exampleChangeTravel3 = "Change of travel data RIS;1;"
 				+ travelID
 				+ ";NEEL;NEELTJE JANS VERY LONG NAME;20;15;124;100;200;300;12;true;false;true;true;false";
+		String exampleConnection = "InfoConnectionRequest";
+		
 		
 		while (true) {
-			randomInt = randomGenerator.nextInt(8);
+			randomInt = randomGenerator.nextInt(9);
 			if (randomInt == 1)
 				qu.putQueue(exampleVideoMode1);
 			if (randomInt == 2)
@@ -76,6 +78,8 @@ class SubmitTestRequests extends Thread {
 				qu.putQueue(exampleTrackID3);
 			if (randomInt == 8)
 				qu.putQueue(exampleChangeTravel3);
+			if (randomInt == 9)
+				qu.putQueue(exampleConnection);
 			try {
 				Thread.sleep(randomInt * 5000);
 			} catch (InterruptedException ie) {

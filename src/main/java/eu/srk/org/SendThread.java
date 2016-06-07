@@ -105,6 +105,8 @@ class SendThread extends Thread {
 				sendWijzigenInformatieRIS(parts);
 			if (parts[0].equals("Video Mode Select"))
 				sendVideoMode(parts);
+			if (parts[0].equals("InfoConnectionRequest"))
+				sendInfoConnection(parts);
 		} catch (Exception e) {
 			logs.logError("Sending to RW (" + parts[0] + "): " + e);
 		}
@@ -604,6 +606,21 @@ class SendThread extends Thread {
 		} catch (IOException e) {
 			disconnect();
 		}
+
+	}
+
+	// sendInfoConnection
+	public void sendInfoConnection(String[] k) {
+		
+		String status="";
+		if (error) {
+			status="disconnected";
+		} else {
+			status="connected";
+		}
+		String reply="ReplyConnectionRequest;"+status;
+		
+		String result = XMLInterface.stringToXML(reply);
 
 	}
 }
