@@ -117,31 +117,7 @@ class SendThread extends Thread {
 			logs.logInfo("unknown command: " + parts[0]);
 		}
 		
-		
-		
-//		try {
-//			if (parts[0].equals("Track Identification"))
-//				sendTrackInformation(parts);
-//			if (parts[0].equals("Track Identification Extended"))
-//				sendTrackInformationExtended(parts);
-//			if (parts[0].equals("Track Identification RIS"))
-//				sendTrackInformationRIS(parts);
-//			if (parts[0].equals("Change of travel data"))
-//				sendWijzigenInformatie(parts);
-//			if (parts[0].equals("Change of travel data Extended"))
-//				sendWijzigenInformatieExtended(parts);
-//			if (parts[0].equals("Change of travel data RIS"))
-//				sendWijzigenInformatieRIS(parts);
-//			if (parts[0].equals("Video Mode Select"))
-//				sendVideoMode(parts);
-//			if (parts[0].equals("InfoConnectionRequest"))
-//				sendInfoConnection(parts);
-//		} catch (Exception e) {
-//			logs.logError("Sending to RW (" + parts[0] + "): " + e);
-//		}
 	}
-
-
 
 	// sendTrackInformation
 	public void sendTrackInformation(String[] k) {
@@ -309,16 +285,24 @@ class SendThread extends Thread {
 			s = k[j++]+r+r+r+r;
 			// Cut-off in multiples of 4
 			int q=s.length()-s.length()%4;
+			
+			int i1=0;
 			for (int l=0;l<q;l=l+4) {
-				String w=s.substring(l*4,l*4+4);
+				i1++;			
+			}
+			
+			c = t.toByteArray1(i1);
+			os.write(c, 0, 4);
+			
+			
+			for (int l=0;l<q;l=l+4) {
+				String w=s.substring(l,l+4);
 				c[0] = (byte) w.charAt(0);
 				c[1] = (byte) w.charAt(1);
 				c[2] = (byte) w.charAt(2);
 				c[3] = (byte) w.charAt(3);			
 				os.write(c, 0, 4);				
 			}
-			
-			logs.logDebug("HALLO"+k[j]);
 			
 			// Ship lenght
 			c = t.toByteArray1(Integer.valueOf(k[j++]));
@@ -538,13 +522,13 @@ class SendThread extends Thread {
 			c = t.toByteArray1(i);
 			os.write(c, 0, 4);
 
-			logs.logDebug(Integer.toString(i));
+			//logs.logDebug(Integer.toString(i));
 			
 			int j = 2;
 
 			for (int k1 = 0; k1 < i; k1++) {
 				// TravelID
-				logs.logDebug(k[j]);
+				//logs.logDebug(k[j]);
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 				
@@ -562,8 +546,17 @@ class SendThread extends Thread {
 				s = k[j++]+r+r+r+r;
 				// Cut-off in multiples of 4
 				int q=s.length()-s.length()%4;
+
+				int i1=0;
 				for (int l=0;l<q;l=l+4) {
-					String w=s.substring(l*4,l*4+4);
+					i1++;			
+				}
+				
+				c = t.toByteArray1(i1);
+				os.write(c, 0, 4);
+				
+				for (int l=0;l<q;l=l+4) {
+					String w=s.substring(l,l+4);
 					c[0] = (byte) w.charAt(0);
 					c[1] = (byte) w.charAt(1);
 					c[2] = (byte) w.charAt(2);
@@ -572,22 +565,22 @@ class SendThread extends Thread {
 				}
 				
 				// length
-				logs.logDebug(k[j]);
+				//logs.logDebug(k[j]);
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 
 				// width
-				logs.logDebug(k[j]);
+				//logs.logDebug(k[j]);
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 
 				// depth
-				logs.logDebug(k[j]);
+				//logs.logDebug(k[j]);
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 
 				// Ship MMSI
-				logs.logDebug(k[j]);
+				//logs.logDebug(k[j]);
 				c = t.toByteArray1Long(Long.valueOf(k[j++]));
 				os.write(c, 0, 4);
 				
@@ -596,7 +589,7 @@ class SendThread extends Thread {
 				os.write(c, 0, 4);			
 
 				// Ship Euro
-				logs.logDebug(k[j]);
+				//logs.logDebug(k[j]);
 				c = t.toByteArray1Long(Long.valueOf(k[j++]));
 				os.write(c, 0, 4);
 				
