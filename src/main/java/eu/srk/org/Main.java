@@ -48,7 +48,7 @@ public class Main {
 			System.exit(0);
 		}
 
-		Engine t = new Engine(server, portListen, portWrite);
+		EngineOld t = new EngineOld(server, portListen, portWrite);
 		try {
 			t.run();
 			t.join();

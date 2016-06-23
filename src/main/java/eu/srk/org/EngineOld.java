@@ -17,7 +17,7 @@ package eu.srk.org;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
-public class Engine extends Thread {
+public class EngineOld extends Thread {
 
 	String server; 
 	String portListen;
@@ -27,7 +27,7 @@ public class Engine extends Thread {
 
 	ClientSocketManagement socket;
 
-	Engine(String server, String portListen, String portWrite) {
+	EngineOld(String server, String portListen, String portWrite) {
 		this.server = server;
 		this.portListen = portListen;
 		this.portWrite = portWrite;
@@ -44,7 +44,7 @@ public class Engine extends Thread {
 			// Submit test data
 			SubmitTestRequests p3 = new SubmitTestRequests();
 			p3.start();
-			
+
 			while (true) {
 
 				is = socket.getDataInputStream();
