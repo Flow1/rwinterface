@@ -86,30 +86,59 @@ class SendThread extends Thread {
 	}
 
 	public void sendData(String command) {
-		logs.logDebug("Sending: "+command);
+		logs.logDebug("Sending: "+ command);
 		String command1 = XMLInterface.xmlToString(command);
 		String[] parts = command1.split(";");
-
-		try {
-			if (parts[0].equals("Track Identification"))
-				sendTrackInformation(parts);
-			if (parts[0].equals("Track Identification Extended"))
-				sendTrackInformationExtended(parts);
-			if (parts[0].equals("Track Identification RIS"))
-				sendTrackInformationRIS(parts);
-			if (parts[0].equals("Change of travel data"))
-				sendWijzigenInformatie(parts);
-			if (parts[0].equals("Change of travel data Extended"))
-				sendWijzigenInformatieExtended(parts);
-			if (parts[0].equals("Change of travel data RIS"))
-				sendWijzigenInformatieRIS(parts);
-			if (parts[0].equals("Video Mode Select"))
-				sendVideoMode(parts);
-			if (parts[0].equals("InfoConnectionRequest"))
-				sendInfoConnection(parts);
-		} catch (Exception e) {
-			logs.logError("Sending to RW (" + parts[0] + "): " + e);
+		
+		if(parts[0].equals("Track Identification")) {
+			sendTrackInformation(parts);
+		} 
+		else if (parts[0].equals("Track Identification Extended")){
+			sendTrackInformationExtended(parts);
 		}
+		else if (parts[0].equals("Track Identification RIS")){
+			sendTrackInformationRIS(parts);
+		}
+		else if (parts[0].equals("Change of travel data")){
+			sendWijzigenInformatie(parts);
+		}
+		else if (parts[0].equals("Change of travel data Extended")){
+			sendWijzigenInformatieExtended(parts);
+		}
+		else if (parts[0].equals("Change of travel data RIS")){
+			sendWijzigenInformatieRIS(parts);
+		}
+		else if (parts[0].equals("Video Mode Select")) {
+			sendVideoMode(parts);
+		}
+		else if (parts[0].equals("InfoConnectionRequest")) {
+			sendInfoConnection(parts);
+		} else {
+			logs.logInfo("unknown command: " + parts[0]);
+		}
+		
+		
+		
+//		try {
+//			if (parts[0].equals("Track Identification"))
+//				sendTrackInformation(parts);
+//			if (parts[0].equals("Track Identification Extended"))
+//				sendTrackInformationExtended(parts);
+//			if (parts[0].equals("Track Identification RIS"))
+//				sendTrackInformationRIS(parts);
+//			if (parts[0].equals("Change of travel data"))
+//				sendWijzigenInformatie(parts);
+//			if (parts[0].equals("Change of travel data Extended"))
+//				sendWijzigenInformatieExtended(parts);
+//			if (parts[0].equals("Change of travel data RIS"))
+//				sendWijzigenInformatieRIS(parts);
+//			if (parts[0].equals("Video Mode Select"))
+//				sendVideoMode(parts);
+//			if (parts[0].equals("InfoConnectionRequest"))
+//				sendInfoConnection(parts);
+//		} catch (Exception e) {
+//			logs.logError("Sending to RW (" + parts[0] + "): " + e);
+//		}
 	}
 
 
@@ -289,6 +318,8 @@ class SendThread extends Thread {
 				os.write(c, 0, 4);				
 			}
 			
+			logs.logDebug("HALLO"+k[j]);
+			
 			// Ship lenght
 			c = t.toByteArray1(Integer.valueOf(k[j++]));
 			os.write(c, 0, 4);
@@ -404,7 +435,7 @@ class SendThread extends Thread {
 	public void sendWijzigenInformatieExtended(String[] k) {
 		try {
 			Binary t = new Binary();
-			logs.logDebug("Physical send Change Jourmey Extended");
+			logs.logDebug("Physical send Change Journey Extended");
 			int b = 5;
 			byte[] c = t.toByteArray1(b);
 			os.write(c, 0, 4);
@@ -507,10 +538,13 @@ class SendThread extends Thread {
 			c = t.toByteArray1(i);
 			os.write(c, 0, 4);
 
+			logs.logDebug(Integer.toString(i));
+			
 			int j = 2;
 
 			for (int k1 = 0; k1 < i; k1++) {
 				// TravelID
+				logs.logDebug(k[j]);
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 				
@@ -538,18 +572,22 @@ class SendThread extends Thread {
 				}
 				
 				// length
+				logs.logDebug(k[j]);
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 
 				// width
+				logs.logDebug(k[j]);
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 
 				// depth
+				logs.logDebug(k[j]);
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 
 				// Ship MMSI
+				logs.logDebug(k[j]);
 				c = t.toByteArray1Long(Long.valueOf(k[j++]));
 				os.write(c, 0, 4);
 				
@@ -558,13 +596,15 @@ class SendThread extends Thread {
 				os.write(c, 0, 4);			
 
 				// Ship Euro
+				logs.logDebug(k[j]);
 				c = t.toByteArray1Long(Long.valueOf(k[j++]));
 				os.write(c, 0, 4);
 				
 				// DpID 
 				c[0] = 0;
 				c[1] = 0;
-				c[2] = t.intToByte(Integer.valueOf(k[j++]));
+				c[2] = 0;
+	//			c[2] = t.intToByte(Integer.valueOf(k[j++]));
 				
 				// Attributes
 				c[3]=0;

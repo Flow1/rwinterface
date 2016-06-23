@@ -22,7 +22,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		PropertiesObject props = PropertiesObject.getInstance();
-		props.loadProperties("config.properties");
+		props.loadProperties("src/main/resources/config.properties");
 
 		LoggerObject logs = LoggerObject.getInstance();
 

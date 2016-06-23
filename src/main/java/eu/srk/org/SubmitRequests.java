@@ -36,7 +36,7 @@ class SubmitTestRequests extends Thread {
 
 		int randomInt = randomGenerator.nextInt(100);
 
-		String travelID = "10516001";
+		String travelID = "105160001";
 		String dpID = "45";
 
 		String exampleVideoMode1 = "Video Mode Select;" + travelID + ";" + dpID
@@ -53,10 +53,10 @@ class SubmitTestRequests extends Thread {
 		String exampleTrackID2 = "Track Identification;" + travelID
 				+ ";NEEL;20;15;124;12;true;false;true;true;false";
 		String exampleTrackID3 = "Track Identification RIS;" + travelID
-				+ ";NEEL;NEELTJE JANS VERY LONG NAME;20;15;124;100;200;300;12;true;false;true;true;false";
+				+ ";NEEL;NEELTJE JANS VERY LONG NAME;20;15;124;100;200;300;15;true;false;true;true;false";
 		String exampleChangeTravel3 = "Change of travel data RIS;1;"
 				+ travelID
-				+ ";NEEL;NEELTJE JANS VERY LONG NAME;20;15;124;100;200;300;12;true;false;true;true;false";
+				+ ";NEEL;NEELTJE JANS VERY LONG NAME;20;15;124;100;200;300;true;false;true;true;false";
 		String exampleConnection = "InfoConnectionRequest";
 		
 		
