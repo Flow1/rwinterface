@@ -14,21 +14,50 @@ package eu.srk.org;
 
 import java.io.*;
 import java.lang.Thread;
+import java.util.Properties;
+
+import javax.jms.JMSException;
+
+import eu.srk.org.jms.JMSSender;
 
 class ReceiveThread extends Thread {
 	DataInputStream is;
 
 	boolean error = false;
+	JMSSender sender;
 	static LoggerObject logs;
 	ClientSocketManagement socket;
 
 	public ReceiveThread() {
 	}
 
+	public void prepareSender() {
+		logs = LoggerObject.getInstance();
+
+		try {
+			Properties prop = new Properties();
+			InputStream inStream = new FileInputStream("src/main/resources/jms.properties");
+			prop.load(inStream);
+			sender = new JMSSender(prop);
+
+		} catch (JMSException e) {
+			logs.logError(e.toString());
+			System.exit(0);
+		} catch (FileNotFoundException e) {
+			logs.logError(e.toString());
+			System.exit(0);
+		} catch (IOException e) {
+			logs.logError(e.toString());
+			System.exit(0);
+		}
+
+	}
+
 	public void run() {
 		logs = LoggerObject.getInstance();
 
 		socket = ClientSocketManagement.getInstance();
+		prepareSender();
 		error = false;
 		while (!error) {
 
@@ -45,12 +74,17 @@ class ReceiveThread extends Thread {
 					try {
 						if (command == 101)
 							result = processPositionReport(is);
-						//if (command == 102)
-						//	result = processZichtReport(is);
+						// if (command == 102)
+						// result = processZichtReport(is);
 						if (command == 105)
 							result = processReisGeselekteerd(is);
 						if (result != "")
 							result = XMLInterface.stringToXML(result);
+						try {
+							sender.sendMessage(result);
+						} catch (JMSException e) {
+							logs.logError(e.toString());
+						}
 					} catch (IOException e) {
 						// Signal to reconnect
 						disconnect();
@@ -136,7 +170,8 @@ class ReceiveThread extends Thread {
 								next = true;
 							} else {
 								logs.logInfo("Invalid command received: " + b);
-								// System.out.print("Invalid command received: ");
+								// System.out.print("Invalid command received:
+								// ");
 								// System.out.format("%02X ", b);
 								// System.out.println();
 							}

@@ -13,6 +13,11 @@ package eu.srk.org;
 
 import java.io.*;
 import java.lang.Thread;
+import java.util.Properties;
+
+import javax.jms.JMSException;
+
+import eu.srk.org.jms.JMSSender;
 
 class SendThread extends Thread {
 	DataInputStream is;
@@ -34,6 +39,7 @@ class SendThread extends Thread {
 		socket = ClientSocketManagement.getInstance();
 
 		qu = Queue.getInstance();
+
 		error = false;
 		while (!error) {
 			os = socket.getDataOutputStream();
@@ -41,7 +47,8 @@ class SendThread extends Thread {
 
 			if (!error) {
 				if (qu.queueEmpty()) {
-					// Unfortunately busy-waiting to enable quick reconnect after a disconnect
+					// Unfortunately busy-waiting to enable quick reconnect
+					// after a disconnect
 					try {
 						Thread.sleep(300);
 					} catch (InterruptedException ie) {
@@ -86,37 +93,30 @@ class SendThread extends Thread {
 	}
 
 	public void sendData(String command) {
-		logs.logDebug("Sending: "+ command);
+		logs.logDebug("Sending: " + command);
 		String command1 = XMLInterface.xmlToString(command);
 		String[] parts = command1.split(";");
-		
-		if(parts[0].equals("Track Identification")) {
+
+		if (parts[0].equals("Track Identification")) {
 			sendTrackInformation(parts);
-		} 
-		else if (parts[0].equals("Track Identification Extended")){
+		} else if (parts[0].equals("Track Identification Extended")) {
 			sendTrackInformationExtended(parts);
-		}
-		else if (parts[0].equals("Track Identification RIS")){
+		} else if (parts[0].equals("Track Identification RIS")) {
 			sendTrackInformationRIS(parts);
-		}
-		else if (parts[0].equals("Change of travel data")){
+		} else if (parts[0].equals("Change of travel data")) {
 			sendWijzigenInformatie(parts);
-		}
-		else if (parts[0].equals("Change of travel data Extended")){
+		} else if (parts[0].equals("Change of travel data Extended")) {
 			sendWijzigenInformatieExtended(parts);
-		}
-		else if (parts[0].equals("Change of travel data RIS")){
+		} else if (parts[0].equals("Change of travel data RIS")) {
 			sendWijzigenInformatieRIS(parts);
-		}
-		else if (parts[0].equals("Video Mode Select")) {
+		} else if (parts[0].equals("Video Mode Select")) {
 			sendVideoMode(parts);
-		}
-		else if (parts[0].equals("InfoConnectionRequest")) {
+		} else if (parts[0].equals("InfoConnectionRequest")) {
 			sendInfoConnection(parts);
 		} else {
-			logs.logInfo("unknown command: " + parts[0]);
+			logs.logInfo("Unknown command: " + parts[0]);
 		}
-		
+
 	}
 
 	// sendTrackInformation
@@ -155,18 +155,23 @@ class SendThread extends Thread {
 			c = t.toByteArray1(Integer.valueOf(k[j++]));
 			os.write(c, 0, 4);
 
-			// DpID 
+			// DpID
 			c[0] = 0;
 			c[1] = 0;
 			c[2] = t.intToByte(Integer.valueOf(k[j++]));
-			
+
 			// Attributes
-			c[3]=0;
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x10);
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x08);
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x04);
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x02);
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x01);
+			c[3] = 0;
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x10);
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x08);
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x04);
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x02);
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x01);
 			os.write(c, 0, 4);
 
 		} catch (IOException e) {
@@ -237,18 +242,23 @@ class SendThread extends Thread {
 			c = t.toByteArray1(Integer.valueOf(k[j++]));
 			os.write(c, 0, 4);
 
-			// DpID 
+			// DpID
 			c[0] = 0;
 			c[1] = 0;
 			c[2] = t.intToByte(Integer.valueOf(k[j++]));
-			
+
 			// Attributes
-			c[3]=0;
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x10);
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x08);
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x04);
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x02);
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x01);
+			c[3] = 0;
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x10);
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x08);
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x04);
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x02);
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x01);
 			os.write(c, 0, 4);
 
 		} catch (IOException e) {
@@ -281,29 +291,28 @@ class SendThread extends Thread {
 			os.write(c, 0, 4);
 
 			// Ship Name
-			char r=(char) 0;
-			s = k[j++]+r+r+r+r;
+			char r = (char) 0;
+			s = k[j++] + r + r + r + r;
 			// Cut-off in multiples of 4
-			int q=s.length()-s.length()%4;
-			
-			int i1=0;
-			for (int l=0;l<q;l=l+4) {
-				i1++;			
+			int q = s.length() - s.length() % 4;
+
+			int i1 = 0;
+			for (int l = 0; l < q; l = l + 4) {
+				i1++;
 			}
-			
+
 			c = t.toByteArray1(i1);
 			os.write(c, 0, 4);
-			
-			
-			for (int l=0;l<q;l=l+4) {
-				String w=s.substring(l,l+4);
+
+			for (int l = 0; l < q; l = l + 4) {
+				String w = s.substring(l, l + 4);
 				c[0] = (byte) w.charAt(0);
 				c[1] = (byte) w.charAt(1);
 				c[2] = (byte) w.charAt(2);
-				c[3] = (byte) w.charAt(3);			
-				os.write(c, 0, 4);				
+				c[3] = (byte) w.charAt(3);
+				os.write(c, 0, 4);
 			}
-			
+
 			// Ship lenght
 			c = t.toByteArray1(Integer.valueOf(k[j++]));
 			os.write(c, 0, 4);
@@ -319,41 +328,46 @@ class SendThread extends Thread {
 			// Ship MMSI
 			c = t.toByteArray1Long(Long.valueOf(k[j++]));
 			os.write(c, 0, 4);
-			
+
 			// Ship IMO
 			c = t.toByteArray1Long(Long.valueOf(k[j++]));
-			os.write(c, 0, 4);			
+			os.write(c, 0, 4);
 
 			// Ship Euro
 			c = t.toByteArray1Long(Long.valueOf(k[j++]));
 			os.write(c, 0, 4);
-			
-			// DpID 
+
+			// DpID
 			c[0] = 0;
 			c[1] = 0;
 			c[2] = t.intToByte(Integer.valueOf(k[j++]));
-			
+
 			// Attributes
-			c[3]=0;
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x10);
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x08);
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x04);
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x02);
-			if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x01);
+			c[3] = 0;
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x10);
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x08);
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x04);
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x02);
+			if (k[j++].equals("true"))
+				c[3] = t.intToByte(t.byteToInt(c[3]) | 0x01);
 			os.write(c, 0, 4);
 
 		} catch (IOException e) {
 			disconnect();
 		}
 	}
-	
+
 	// sendWijzigenInformatie
 	public void sendWijzigenInformatie(String[] k) {
 		try {
 			Binary t = new Binary();
 			logs.logDebug("Physical send Change Journey");
-			
-			//1;5;NEEL;20;15;124;true;false;true;true;false";
+
+			// 1;5;NEEL;20;15;124;true;false;true;true;false";
 			int b = 2;
 
 			byte[] c = t.toByteArray1(b);
@@ -371,7 +385,7 @@ class SendThread extends Thread {
 				// TravelID
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
-				
+
 				// Ship label
 				String s = k[j++] + "   ";
 				c[0] = (byte) s.charAt(0);
@@ -393,18 +407,23 @@ class SendThread extends Thread {
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 
-				// DpID 
+				// DpID
 				c[0] = 0;
 				c[1] = 0;
 				c[2] = t.intToByte(Integer.valueOf(k[j++]));
-				
+
 				// Attributes
-				c[3]=0;
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x10);
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x08);
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x04);
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x02);
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x01);
+				c[3] = 0;
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x10);
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x08);
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x04);
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x02);
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x01);
 				os.write(c, 0, 4);
 			}
 
@@ -413,7 +432,6 @@ class SendThread extends Thread {
 		}
 
 	}
-
 
 	// sendWijzigenInformatie extended
 	public void sendWijzigenInformatieExtended(String[] k) {
@@ -436,7 +454,7 @@ class SendThread extends Thread {
 				// TravelID
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
-				
+
 				// Ships label
 				String s = k[j++] + "   ";
 				c[0] = (byte) s.charAt(0);
@@ -484,18 +502,23 @@ class SendThread extends Thread {
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 
-				// DpID 
+				// DpID
 				c[0] = 0;
 				c[1] = 0;
 				c[2] = t.intToByte(Integer.valueOf(k[j++]));
-				
+
 				// Attributes
-				c[3]=0;
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x10);
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x08);
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x04);
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x02);
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x01);
+				c[3] = 0;
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x10);
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x08);
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x04);
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x02);
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x01);
 				os.write(c, 0, 4);
 
 			}
@@ -510,7 +533,7 @@ class SendThread extends Thread {
 		try {
 			Binary t = new Binary();
 			logs.logDebug("Physical send Change Journey RIS");
-			
+
 			int b = 7;
 
 			byte[] c = t.toByteArray1(b);
@@ -522,16 +545,16 @@ class SendThread extends Thread {
 			c = t.toByteArray1(i);
 			os.write(c, 0, 4);
 
-			//logs.logDebug(Integer.toString(i));
-			
+			// logs.logDebug(Integer.toString(i));
+
 			int j = 2;
 
 			for (int k1 = 0; k1 < i; k1++) {
 				// TravelID
-				//logs.logDebug(k[j]);
+				// logs.logDebug(k[j]);
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
-				
+
 				// Ship label
 				String s = k[j++] + "   ";
 				c[0] = (byte) s.charAt(0);
@@ -542,70 +565,75 @@ class SendThread extends Thread {
 				os.write(c, 0, 4);
 
 				// Ship Name
-				char r=(char) 0;
-				s = k[j++]+r+r+r+r;
+				char r = (char) 0;
+				s = k[j++] + r + r + r + r;
 				// Cut-off in multiples of 4
-				int q=s.length()-s.length()%4;
+				int q = s.length() - s.length() % 4;
 
-				int i1=0;
-				for (int l=0;l<q;l=l+4) {
-					i1++;			
+				int i1 = 0;
+				for (int l = 0; l < q; l = l + 4) {
+					i1++;
 				}
-				
+
 				c = t.toByteArray1(i1);
 				os.write(c, 0, 4);
-				
-				for (int l=0;l<q;l=l+4) {
-					String w=s.substring(l,l+4);
+
+				for (int l = 0; l < q; l = l + 4) {
+					String w = s.substring(l, l + 4);
 					c[0] = (byte) w.charAt(0);
 					c[1] = (byte) w.charAt(1);
 					c[2] = (byte) w.charAt(2);
-					c[3] = (byte) w.charAt(3);			
-					os.write(c, 0, 4);				
+					c[3] = (byte) w.charAt(3);
+					os.write(c, 0, 4);
 				}
-				
+
 				// length
-				//logs.logDebug(k[j]);
+				// logs.logDebug(k[j]);
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 
 				// width
-				//logs.logDebug(k[j]);
+				// logs.logDebug(k[j]);
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 
 				// depth
-				//logs.logDebug(k[j]);
+				// logs.logDebug(k[j]);
 				c = t.toByteArray1(Integer.valueOf(k[j++]));
 				os.write(c, 0, 4);
 
 				// Ship MMSI
-				//logs.logDebug(k[j]);
+				// logs.logDebug(k[j]);
 				c = t.toByteArray1Long(Long.valueOf(k[j++]));
 				os.write(c, 0, 4);
-				
+
 				// Ship IMO
 				c = t.toByteArray1Long(Long.valueOf(k[j++]));
-				os.write(c, 0, 4);			
+				os.write(c, 0, 4);
 
 				// Ship Euro
-				//logs.logDebug(k[j]);
+				// logs.logDebug(k[j]);
 				c = t.toByteArray1Long(Long.valueOf(k[j++]));
 				os.write(c, 0, 4);
-				
-				// DpID 
+
+				// DpID
 				c[0] = 0;
 				c[1] = 0;
 				c[2] = 0;
-	//			c[2] = t.intToByte(Integer.valueOf(k[j++]));
-				
+				// c[2] = t.intToByte(Integer.valueOf(k[j++]));
+
 				// Attributes
-				c[3]=0;
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x10);
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x08);
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x04);
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x02);
-				if (k[j++].equals("true")) c[3]=t.intToByte(t.byteToInt(c[3])  | 0x01);
+				c[3] = 0;
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x10);
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x08);
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x04);
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x02);
+				if (k[j++].equals("true"))
+					c[3] = t.intToByte(t.byteToInt(c[3]) | 0x01);
 				os.write(c, 0, 4);
 			}
 
@@ -614,7 +642,7 @@ class SendThread extends Thread {
 		}
 
 	}
-	
+
 	// sendVideoMode
 	public void sendVideoMode(String[] k) {
 		try {
@@ -644,15 +672,15 @@ class SendThread extends Thread {
 
 	// sendInfoConnection
 	public void sendInfoConnection(String[] k) {
-		
-		String status="";
+
+		String status = "";
 		if (error) {
-			status="disconnected";
+			status = "disconnected";
 		} else {
-			status="connected";
+			status = "connected";
 		}
-		String reply="ReplyConnectionRequest;"+status;
-		
+		String reply = "ReplyConnectionRequest;" + status;
+
 		String result = XMLInterface.stringToXML(reply);
 
 	}

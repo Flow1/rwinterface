@@ -17,6 +17,9 @@ import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
 
+import eu.srk.org.Queue;
+import eu.srk.org.XMLInterface;
+
 public class JMSConsumer implements MessageListener {
 
 	final static Logger logger = Logger.getLogger(JMSConsumer.class);
@@ -31,13 +34,15 @@ public class JMSConsumer implements MessageListener {
 	private String brokerUrl;
 	private String userName;
 	private String password;
+	private Queue qu;
 
-	public JMSConsumer(Properties props) throws JMSException {
+	public JMSConsumer(Properties props, Queue qu1) throws JMSException {
 
 		brokerUrl = props.getProperty("jms_brokerurl");
 		queue = props.getProperty("jms_consumer_queue");
 		userName = props.getProperty("jms_username");
 		password = props.getProperty("jms_password");
+		qu = qu1;
 
 		factory = new ActiveMQConnectionFactory(userName, password, brokerUrl);
 
@@ -54,15 +59,14 @@ public class JMSConsumer implements MessageListener {
 
 	}
 
-
 	public static void main(String args[]) {
 		JMSConsumer consumer;
+		Queue qu = null;
 		try {
 			Properties prop = new Properties();
 			InputStream inStream = new FileInputStream("src/main/resources/jms.properties");
-
 			prop.load(inStream);
-			consumer = new JMSConsumer(prop);
+			consumer = new JMSConsumer(prop, qu);
 		} catch (JMSException e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -81,10 +85,13 @@ public class JMSConsumer implements MessageListener {
 
 	public void onMessage(javax.jms.Message message) {
 		try {
-
 			if (message instanceof TextMessage) {
 				TextMessage text = (TextMessage) message;
-				System.out.println("Message is : " + text.getText());
+
+				XMLInterface translator = new XMLInterface();
+				String ascii = translator.xmlToString(text.getText());
+				qu.putQueue(ascii);
+				// System.out.println("Message is : " + text.getText());
 			}
 		} catch (JMSException e) {
 			e.printStackTrace();
