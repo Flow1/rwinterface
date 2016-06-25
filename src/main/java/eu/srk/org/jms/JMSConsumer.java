@@ -47,7 +47,7 @@ public class JMSConsumer implements MessageListener {
 		factory = new ActiveMQConnectionFactory(userName, password, brokerUrl);
 
 		connection = factory.createConnection();
-		connection.setClientID("rw_sender");
+		connection.setClientID("rw_receiver");
 
 		connection.start();
 		session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);

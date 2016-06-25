@@ -13,11 +13,6 @@ package eu.srk.org;
 
 import java.io.*;
 import java.lang.Thread;
-import java.util.Properties;
-
-import javax.jms.JMSException;
-
-import eu.srk.org.jms.JMSSender;
 
 class SendThread extends Thread {
 	DataInputStream is;

@@ -2,7 +2,6 @@ package eu.srk.org;
 
 
 import java.io.*;
-import java.lang.Thread;
 import java.net.Socket;
 import java.net.*;
 
