@@ -36,8 +36,9 @@ public class JMSConsumer implements MessageListener {
 	private String password;
 	private Queue qu;
 
-	public JMSConsumer(Properties props, Queue qu1) throws JMSException {
+	public JMSConsumer(Properties props, Queue qu1) throws JMSException, java.net.ConnectException {
 
+		System.out.println("Consumer");
 		brokerUrl = props.getProperty("jms_brokerurl");
 		queue = props.getProperty("jms_consumer_queue");
 		userName = props.getProperty("jms_username");
@@ -46,17 +47,23 @@ public class JMSConsumer implements MessageListener {
 
 		factory = new ActiveMQConnectionFactory(userName, password, brokerUrl);
 
+		System.out.println("Consumer end xx");
 		connection = factory.createConnection();
+		System.out.println("Consumer end xxx");
 		connection.setClientID("rw_receiver");
 
+		// Hier zit oneindige loop
 		connection.start();
+		System.out.println("Consumer end");
 		session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 		destination = session.createQueue(queue);
 		consumer = session.createConsumer(destination);
+		System.out.println("Consumer end 1");
 		consumer.setMessageListener(this);
+		System.out.println("Consumer end 2");
 		// Now that 'receive' setup is complete, start the Connection
 		connection.start();
-
+		System.out.println("Consumer end");
 	}
 
 	public static void main(String args[]) {

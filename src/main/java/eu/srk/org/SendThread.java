@@ -18,7 +18,7 @@ class SendThread extends Thread {
 	DataInputStream is;
 	DataOutputStream os;
 
-	ClientSocketManagement socket;
+	ServerSocketManagement socket;
 
 	LoggerObject logs;
 
@@ -31,7 +31,7 @@ class SendThread extends Thread {
 
 	public void run() {
 		logs = LoggerObject.getInstance();
-		socket = ClientSocketManagement.getInstance();
+		socket = ServerSocketManagement.getInstance();
 
 		qu = Queue.getInstance();
 

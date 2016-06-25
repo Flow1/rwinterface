@@ -105,10 +105,18 @@ class SubmitTestRequests extends Thread {
 			consumer = new JMSConsumer(prop, qu);
 		} catch (JMSException e) {
 			logs.logError(e.toString());
+			System.exit(0);
+		} catch (java.net.ConnectException e) {
+			System.out.println("Here");
+			logs.logError(e.toString());
+			System.exit(0);			
 		} catch (FileNotFoundException e) {
 			logs.logError(e.toString());
 		} catch (IOException e) {
 			logs.logError(e.toString());
+		} catch (Exception e) {
+			logs.logError(e.toString());
+			System.exit(0);
 		}
 
 		while (true) {
@@ -122,8 +130,8 @@ class SubmitTestRequests extends Thread {
 	public void run() {
 
 		SubmitTestRequests submitter = new SubmitTestRequests();
-		// submitter.testRequests();
-		submitter.messageRequests();
+		submitter.testRequests();
+		//submitter.messageRequests();
 	}
 
 }

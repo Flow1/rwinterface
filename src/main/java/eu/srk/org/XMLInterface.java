@@ -99,8 +99,6 @@ public class XMLInterface {
 			xml = xml + "</ConnectionStatus>";
 		}
 
-//		ZonedDateTime zdt = ZonedDateTime.now();
-//		java.util.Date date = java.util.Date.from(zdt.toInstant());
 		String convertedDate = "";
 		GregorianCalendar gc = new GregorianCalendar(
 				TimeZone.getTimeZone("CET"));
@@ -121,25 +119,6 @@ public class XMLInterface {
 
 		LoggerObject logs;
 		
-		// String s1 =
-		// "<RW_Message Timestamp=\"2016-06-24T20:43:48.434+02:00\"><TrackIdentification>";
-
-		// String s2 = "</TrackIdentification></RW_Message>";
-
-		// String s3 = "<Anchored>true</Anchored>\n" + "<DPID>234</DPID>\n"
-		// + "<IMOVessel>true</IMOVessel>\n"
-		// + "<PilotOnBoard>true</PilotOnBoard>\n"
-		// + "<SeaVessel>true</SeaVessel>\n"
-		// + "<ShipDraught>123</ShipDraught>\n"
-		// + "<ShipLength>232</ShipLength>\n"
-		// + "<ShipWidth>3434</ShipWidth>\n"
-		// + "<SpecialTransport>true</SpecialTransport>\n"
-		// + "<TravelID>1205160002</TravelID>\n"
-		// + "<ShipLabel>JAANTJE         </ShipLabel>\n"
-		// + "<ShipName>JAANTJE</ShipName>\n";
-
-		// String s = s1 + s3 + s2;
-
 		String xsltn = "<?xml version=\"1.0\"?>"
 				+ "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" >"
 				+ "<xsl:output method=\"text\" omit-xml-declaration=\"yes\" indent=\"no\"/>"
@@ -148,7 +127,7 @@ public class XMLInterface {
 				+ "<xsl:variable name=\"SL\" select=\"round(number(ShipLength) * 1024 div 1000)\"/>"
 				+ "<xsl:variable name=\"SW\" select=\"round(number(ShipWidth) * 1024 div 1000)\"/>"
 				+ "<xsl:variable name=\"SD\" select=\"round(number(ShipDraught) * 10)\"/>"
-				+ "<xsl:value-of select=\"concat(TravelID,';',ShipLabel,';',$SL,';',$SW,';',$SD,';',,DPID,';',SeaVessel,';',Anchored,';',SpecialTransport,';',IMOVessel,';',PilotOnBoard,'&#xA;')\"/>"
+				+ "<xsl:value-of select=\"concat(TravelID,';',ShipLabel,';',$SL,';',$SW,';',$SD,';',DPID,';',SeaVessel,';',Anchored,';',SpecialTransport,';',IMOVessel,';',PilotOnBoard,'&#xA;')\"/>"
 				+ "</xsl:template>" + "</xsl:stylesheet>";
 
 		String xslte = "<?xml version=\"1.0\"?>"
@@ -190,14 +169,14 @@ public class XMLInterface {
 			extended = true;
 		if (input.indexOf("ShipName/>") >= 0)
 			extended = false;
-		if (input.indexOf("ShipName><ShipName") >= 0)
+		if (input.indexOf("ShipName></ShipName") >= 0)
 			extended = false;
-
-		boolean csr=true;
+		
+		boolean csr=false;
 		if (input.indexOf("RW_Message/>") >= 0)
-			csr= false;
+			csr= true;
 		if (input.indexOf("RW_Message><RW_Message") >= 0)
-			csr = false;	
+			csr = true;	
 
 		String finalstring = "";
 		if (!csr) {
@@ -248,15 +227,40 @@ public class XMLInterface {
 
 		XMLInterface t = new XMLInterface();
 		String result = t.convertStringXml(input);
+//		String result=input;
 		
 		LoggerObject logs;
 		logs = LoggerObject.getInstance();
 		logs.logDebug("Receiving message: " + input);
+		logs.logDebug("Receiving message: " + result);
 		
 		return result;
 	}
 
 	public static String xmlToString(String input) {
+
+//		XMLInterface t = new XMLInterface();
+//		String result = t.convertXmlString(input);
+		String result=input;
+		
+		LoggerObject logs;
+		logs = LoggerObject.getInstance();
+		logs.logDebug("Intended Sending message: " + input);
+		
+		return result;
+	}
+	
+	public static void main(String[] args) {
+
+		// String
+		// input="PositionReport;Number of Travels;TravelID;XPos;YPOS;Request Additional Info; TravelID;XPos;YPOS;Request Additional Info";
+		// String input="TravelSelected;TravelID;DPiD";
+		// String input = "ReplyConnectionRequest;connected";
+
+		XMLInterface k = new XMLInterface();
+		// String xml = k.convertStringXml(input);
+		// System.out.println(xml);
+
 		String s1 = "<RW_Message Timestamp=\"2016-06-24T20:43:48.434+02:00\"><TrackIdentification>";
 
 		String s2 = "</TrackIdentification></RW_Message>";
@@ -272,17 +276,55 @@ public class XMLInterface {
 				+ "<TravelID>1205160002</TravelID>\n"
 				+ "<ShipLabel>JAANTJE         </ShipLabel>\n"
 				+ "<ShipName>JAANTJE</ShipName>\n";
+		
+		String s31 = "<Anchored>true</Anchored>\n" + "<DPID>234</DPID>\n"
+				+ "<IMOVessel>true</IMOVessel>\n"
+				+ "<PilotOnBoard>true</PilotOnBoard>\n"
+				+ "<SeaVessel>true</SeaVessel>\n"
+				+ "<ShipDraught>123</ShipDraught>\n"
+				+ "<ShipLength>232</ShipLength>\n"
+				+ "<ShipWidth>3434</ShipWidth>\n"
+				+ "<SpecialTransport>true</SpecialTransport>\n"
+				+ "<TravelID>1205160002</TravelID>\n"
+				+ "<ShipLabel>JAANTJE         </ShipLabel>\n";
 
-		String s = s1 + s3 + s2;
+		String s32 = "<Anchored>true</Anchored>\n" + "<DPID>234</DPID>\n"
+				+ "<IMOVessel>true</IMOVessel>\n"
+				+ "<PilotOnBoard>true</PilotOnBoard>\n"
+				+ "<SeaVessel>true</SeaVessel>\n"
+				+ "<ShipDraught>123</ShipDraught>\n"
+				+ "<ShipLength>232</ShipLength>\n"
+				+ "<ShipWidth>3434</ShipWidth>\n"
+				+ "<SpecialTransport>true</SpecialTransport>\n"
+				+ "<TravelID>1205160002</TravelID>\n"
+				+ "<ShipLabel>JAANTJE         </ShipLabel>\n"
+				+ "<ShipName></ShipName>\n";
+
+		String s33 = "<Anchored>true</Anchored>\n" + "<DPID>234</DPID>\n"
+				+ "<IMOVessel>true</IMOVessel>\n"
+				+ "<PilotOnBoard>true</PilotOnBoard>\n"
+				+ "<SeaVessel>true</SeaVessel>\n"
+				+ "<ShipDraught>123</ShipDraught>\n"
+				+ "<ShipLength>232</ShipLength>\n"
+				+ "<ShipWidth>3434</ShipWidth>\n"
+				+ "<SpecialTransport>true</SpecialTransport>\n"
+				+ "<TravelID>1205160002</TravelID>\n"
+				+ "<ShipLabel>JAANTJE         </ShipLabel>\n"
+				+ "<ShipName/>\n";
 		
-		XMLInterface t = new XMLInterface();
-		String result = t.convertXmlString(s);
-		
-		LoggerObject logs;
-		logs = LoggerObject.getInstance();
-		logs.logDebug("Intended Sending message: " + input);
-		
-		return result;
+		String s = s1 + s33 + s2;
+
+//		String xslt1 = "<?xml version=\"1.0\"?>"
+//				+ "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" >"
+//				+ "<xsl:output method=\"text\" omit-xml-declaration=\"yes\" indent=\"no\"/>"
+//				+ "<xsl:template match=\"/\">"
+//				+ "Anchored,DPID,IMOVessel,PilotOnBoard,SeaVessel,ShipDraught,ShipLength,ShipWidth,SpecialTransport,TravelID,ShipLabel,ShipName"
+//				+ "<xsl:for-each select=\"//TrackIdentification\">"
+//				+ "<xsl:value-of select=\"concat(Anchored,';',DPID,';',IMOVessel,';',PilotOnBoard,';',SeaVessel,';',ShipDraught,';',ShipLength,';',ShipWidth,';',SpecialTransport,';',TravelID,';',ShipLabel,';',ShipName,'&#xA;')\"/>"
+//				+ "</xsl:for-each>" + "</xsl:template>" + "</xsl:stylesheet>";
+
+		String xml1 = k.convertXmlString(s);
+		System.out.println(xml1);
+
 	}
-
 }

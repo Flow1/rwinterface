@@ -26,7 +26,7 @@ class ReceiveThread extends Thread {
 	boolean error = false;
 	JMSSender sender;
 	static LoggerObject logs;
-	ClientSocketManagement socket;
+	ServerSocketManagement socket;
 
 	public ReceiveThread() {
 	}
@@ -56,8 +56,8 @@ class ReceiveThread extends Thread {
 	public void run() {
 		logs = LoggerObject.getInstance();
 
-		socket = ClientSocketManagement.getInstance();
-		prepareSender();
+		socket = ServerSocketManagement.getInstance();
+//		prepareSender();
 		error = false;
 		while (!error) {
 
@@ -80,11 +80,11 @@ class ReceiveThread extends Thread {
 							result = processReisGeselekteerd(is);
 						if (result != "")
 							result = XMLInterface.stringToXML(result);
-						try {
-							sender.sendMessage(result);
-						} catch (JMSException e) {
-							logs.logError(e.toString());
-						}
+	//					try {
+	//						sender.sendMessage(result);
+	//					} catch (JMSException e) {
+	//						logs.logError(e.toString());
+	//					}
 					} catch (IOException e) {
 						// Signal to reconnect
 						disconnect();

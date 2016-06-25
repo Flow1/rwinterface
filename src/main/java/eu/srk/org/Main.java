@@ -49,7 +49,7 @@ public class Main {
 			System.exit(0);
 		}
 
-		EngineOld t = new EngineOld(server, portListen, portWrite);
+		Engine t = new Engine(server, portListen, portWrite);
 		try {
 			t.run();
 			t.join();

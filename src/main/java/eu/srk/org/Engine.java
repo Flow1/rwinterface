@@ -25,7 +25,7 @@ public class Engine extends Thread {
 	DataInputStream is;
 	DataOutputStream os;
 
-	ClientSocketManagement socket;
+	ServerSocketManagement serverSocket;
 
 	Engine(String server, String portListen, String portWrite) {
 		this.server = server;
@@ -35,39 +35,38 @@ public class Engine extends Thread {
 
 	public void run() {
 
-		socket = ClientSocketManagement.getInstance();
-		socket.adminSocket(this.server, this.portListen, this.portWrite);
-		is = socket.getDataInputStream();
-		os = socket.getDataOutputStream();
+		serverSocket = ServerSocketManagement.getInstance();
+		serverSocket.createServerSocket(server, portListen);
+		
+		is = null;
+		os = null;
 
-		try {
+
 			// Submit test data
 			SubmitTestRequests p3 = new SubmitTestRequests();
 			p3.start();
 			
 			while (true) {
+				try {
+					serverSocket.waitForConnection();
+					is = serverSocket.getDataInputStream();
+					os = serverSocket.getDataOutputStream();
 
-				is = socket.getDataInputStream();
-				os = socket.getDataOutputStream();
-				if ((is == null) || (os == null)) {
-					socket.getConnectionSingle();
-				}
-
-				if ((is != null) && (os != null)) {
 					SendThread p1 = new SendThread();
 					p1.start();
 
 					ReceiveThread p2 = new ReceiveThread();
 					p2.start();
 
-					// Wait for ending threads, btw: will never happen
+					// Wait for ending threads
 					p1.join();
 					p2.join();
+
+				} catch (InterruptedException e) {
+					//e.printStackTrace();
 				}
 			}
 
-		} catch (InterruptedException e) {
-			;
-		}
-	}
+
+}
 }
