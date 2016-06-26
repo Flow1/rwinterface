@@ -14,6 +14,7 @@ package eu.srk.org;
 
 import java.io.*;
 import java.lang.Thread;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.jms.JMSException;
@@ -83,19 +84,21 @@ class ReceiveThread extends Thread {
 						// result = processZichtReport(is);
 						if (command == 105)
 							result = processReisGeselekteerd(is);
-						if (result != "")
-							result = XMLInterface.stringToXML(result);
-						if (MESSAGING) {
+						if (result != "") {
+							ArrayList<String> r = XMLInterface.stringToXML(result);
+							if (MESSAGING) {
+								for (int i=0;i<r.size();i++)						
 							try {
-								sender.sendMessage(result);
+								sender.sendMessage(r.get(i));
 							} catch (JMSException e) {
 								logs.logError(e.toString());
+							}
 							}
 						}
 
 						if (sr.getRequest()) {
 							sr.setRequest(false);
-							String res = sendInfoConnection();
+							String res = sendInfoConnection().get(0);
 							if (MESSAGING) {
 								try {
 									sender.sendMessage(result);
@@ -338,7 +341,7 @@ class ReceiveThread extends Thread {
 	}
 
 	// sendInfoConnection
-	public String sendInfoConnection() {
+	public ArrayList<String> sendInfoConnection() {
 		StatusRequest sr = StatusRequest.getInstance();
 		sr.getRequest();
 

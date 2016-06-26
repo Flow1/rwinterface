@@ -20,7 +20,9 @@
 
 package eu.srk.org;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -48,7 +50,7 @@ public class XMLInterface {
 
 	}
 
-	private String convertStringXml(String input) {
+	private ArrayList<String> convertStringXml(String input) {
 		// String
 		// input="PositionReport;Number of Travels;TravelID;XPos;YPOS;Request Additional Info; TravelID;XPos;YPOS;Request Additional Info";
 		// String input="TravelSelected;TravelID;DPiD";
@@ -56,17 +58,19 @@ public class XMLInterface {
 
 		String[] parts = input.split(";");
 
-		String xml = "";
+		ArrayList<String> list = new ArrayList<String>();
+		
 		if (parts[0].equals("PositionReport")) {
 			int n = Integer.valueOf(parts[1]);
 			int j = 2;
+
 			for (int i = 0; i < n; i++) {
 				long travelId = Integer.valueOf(parts[j++]);
 				int xpos = Integer.valueOf(parts[j++]);
 				int ypos = Integer.valueOf(parts[j++]);
 				int rai = Integer.valueOf(parts[j++]);
 
-				xml = "<PositionReport>";
+				String xml = "<PositionReport>";
 				if (rai == 0) {
 					xml = xml
 							+ "<AdditionalInfoRequested>false</AdditionalInfoRequested>";
@@ -80,44 +84,73 @@ public class XMLInterface {
 				xml = xml + "<ypos>" + Math.round(ypos * (2000.0 / 1024.0))
 						+ "</ypos>";
 				xml = xml + "</PositionReport>";
+				
+				String convertedDate = "";
+				GregorianCalendar gc = new GregorianCalendar(
+						TimeZone.getTimeZone("CET"));
+				try {
+					convertedDate = DatatypeFactory.newInstance()
+							.newXMLGregorianCalendar(gc).toXMLFormat();
+				} catch (DatatypeConfigurationException e) {
+				}
+
+				String xml1 = "<RW_Message Timestamp=\"" + convertedDate + "\">";
+				xml1 = xml1 + xml;
+				xml1 = xml1 + "</RW_Message>";
+				xml1 = onRamp(xml1);
+				list.add(xml1);
 			}
 		} else if (parts[0].equals("TravelSelected")) {
 			int j = 1;
 			long travelId = Integer.valueOf(parts[j++]);
 			int dpid = Integer.valueOf(parts[j++]);
 
-			xml = "<JourneySelection>";
+			String xml = "<JourneySelection>";
 			xml = xml + "<DPID>" + dpid + "</DPID>";
 			xml = xml + "<travelId>" + travelId + "</travelId>";
 			xml = xml + "</JourneySelection>";
+			
+			String convertedDate = "";
+			GregorianCalendar gc = new GregorianCalendar(
+					TimeZone.getTimeZone("CET"));
+			try {
+				convertedDate = DatatypeFactory.newInstance()
+						.newXMLGregorianCalendar(gc).toXMLFormat();
+			} catch (DatatypeConfigurationException e) {
+			}
+
+			String xml1 = "<RW_Message Timestamp=\"" + convertedDate + "\">";
+			xml1 = xml1 + xml;
+			xml1 = xml1 + "</RW_Message>";
+			xml1 = onRamp(xml1);
+			list.add(xml1);			
 
 		} else if (parts[0].equals("ReplyConnectionRequest")) {
-			xml = "<ConnectionStatus>";
+			String xml = "<ConnectionStatus>";
 			if (parts[1].equals("connected")) {
 				xml = xml + "<Connection>true</Connection>";
 			} else {
 				xml = xml + "<Connection>false</Connection>";
 			}
 			xml = xml + "</ConnectionStatus>";
+			String convertedDate = "";
+			GregorianCalendar gc = new GregorianCalendar(
+					TimeZone.getTimeZone("CET"));
+			try {
+				convertedDate = DatatypeFactory.newInstance()
+						.newXMLGregorianCalendar(gc).toXMLFormat();
+			} catch (DatatypeConfigurationException e) {
+			}
+
+			String xml1 = "<RW_Message Timestamp=\"" + convertedDate + "\">";
+			xml1 = xml1 + xml;
+			xml1 = xml1 + "</RW_Message>";
+			xml1 = onRamp(xml1);
+			list.add(xml1);
 		}
 
-		String convertedDate = "";
-		GregorianCalendar gc = new GregorianCalendar(
-				TimeZone.getTimeZone("CET"));
-		try {
-			convertedDate = DatatypeFactory.newInstance()
-					.newXMLGregorianCalendar(gc).toXMLFormat();
-		} catch (DatatypeConfigurationException e) {
-		}
-
-		String xml1 = "<RW_Message Timestamp=\"" + convertedDate + "\">";
-		xml1 = xml1 + xml;
-		xml1 = xml1 + "</RW_Message>";
-
-		xml1 = onRamp(xml1);
-
-		return xml1;
-	}
+		return list;
+	};
 
 	private String convertXmlString(String input) {
 
@@ -235,25 +268,26 @@ public class XMLInterface {
 	}
 
 	public static String onRamp(String input) {
+		// Note: split the positionreport in separate reports
 
 		return input;
 	}
 
-	public static String stringToXML(String input) {
+	public static ArrayList<String> stringToXML(String input) {
 		// String
 		// input="PositionReport;Number of Travels;TravelID;XPos;YPOS;Request Additional Info; TravelID;XPos;YPOS;Request Additional Info";
 		// String input="TravelSelected;TravelID;DPiD";
 		// String input = "ReplyConnectionRequest;connected";
 
 		XMLInterface t = new XMLInterface();
-		String result = t.convertStringXml(input);
-		// String result=input;
+		ArrayList<String> result = t.convertStringXml(input);
 
 		LoggerObject logs;
 		logs = LoggerObject.getInstance();
 		logs.logDebug("Receiving message: " + input);
-		logs.logDebug("Receiving message: " + result);
-
+		for (int i=0;i<result.size();i++) {
+			logs.logDebug("Receiving message: " + result.get(i));
+		}
 		return result;
 	}
 
