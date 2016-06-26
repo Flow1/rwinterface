@@ -115,7 +115,6 @@ class SubmitTestRequests extends Thread {
 			logs.logError(e.toString());
 			System.exit(0);
 		} catch (java.net.ConnectException e) {
-			System.out.println("Here");
 			logs.logError(e.toString());
 			System.exit(0);
 		} catch (FileNotFoundException e) {

@@ -22,7 +22,6 @@ package eu.srk.org;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -59,7 +58,7 @@ public class XMLInterface {
 		String[] parts = input.split(";");
 
 		ArrayList<String> list = new ArrayList<String>();
-		
+
 		if (parts[0].equals("PositionReport")) {
 			int n = Integer.valueOf(parts[1]);
 			int j = 2;
@@ -84,7 +83,7 @@ public class XMLInterface {
 				xml = xml + "<ypos>" + Math.round(ypos * (2000.0 / 1024.0))
 						+ "</ypos>";
 				xml = xml + "</PositionReport>";
-				
+
 				String convertedDate = "";
 				GregorianCalendar gc = new GregorianCalendar(
 						TimeZone.getTimeZone("CET"));
@@ -94,7 +93,8 @@ public class XMLInterface {
 				} catch (DatatypeConfigurationException e) {
 				}
 
-				String xml1 = "<RW_Message Timestamp=\"" + convertedDate + "\">";
+				String xml1 = "<RW_Message Timestamp=\"" + convertedDate
+						+ "\">";
 				xml1 = xml1 + xml;
 				xml1 = xml1 + "</RW_Message>";
 				xml1 = onRamp(xml1);
@@ -109,7 +109,7 @@ public class XMLInterface {
 			xml = xml + "<DPID>" + dpid + "</DPID>";
 			xml = xml + "<travelId>" + travelId + "</travelId>";
 			xml = xml + "</JourneySelection>";
-			
+
 			String convertedDate = "";
 			GregorianCalendar gc = new GregorianCalendar(
 					TimeZone.getTimeZone("CET"));
@@ -123,7 +123,7 @@ public class XMLInterface {
 			xml1 = xml1 + xml;
 			xml1 = xml1 + "</RW_Message>";
 			xml1 = onRamp(xml1);
-			list.add(xml1);			
+			list.add(xml1);
 
 		} else if (parts[0].equals("ReplyConnectionRequest")) {
 			String xml = "<ConnectionStatus>";
@@ -267,8 +267,50 @@ public class XMLInterface {
 		return finalstring;
 	}
 
+	public String rampOff(String input) {
+		LoggerObject logs;
+
+		String xslt = "<?xml version=\"1.0\"?>"
+				+ "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" >"
+				+ " <xsl:output indent=\"yes\" omit-xml-declaration=\"yes\"/>"
+				+ "<xsl:template match=\"/\">"
+				+ "	<xsl:copy-of select=\"//RW_Message/*\">" + "</xsl:copy-of>"
+				+ "</xsl:template>"
+				+ "</xsl:stylesheet>";
+
+		String finalstring = "";
+
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			InputStream in = new ByteArrayInputStream(
+					input.getBytes(StandardCharsets.UTF_8));
+
+			InputStream ins = new ByteArrayInputStream(
+					xslt.getBytes(StandardCharsets.UTF_8));
+			Document document = builder.parse(in);
+
+			StreamSource stylesource = new StreamSource(ins);
+			Transformer transformer = TransformerFactory.newInstance()
+					.newTransformer(stylesource);
+			Source source = new DOMSource(document);
+			StringWriter outWriter = new StringWriter();
+			StreamResult result = new StreamResult(outWriter);
+
+			transformer.transform(source, result);
+			StringBuffer sb = outWriter.getBuffer();
+			finalstring = sb.toString();
+
+		} catch (Exception e) {
+			logs = LoggerObject.getInstance();
+			logs.logError(e.toString());
+		}
+
+		return finalstring;
+	}
+
 	public static String onRamp(String input) {
-		// Note: split the positionreport in separate reports
 
 		return input;
 	}
@@ -285,7 +327,7 @@ public class XMLInterface {
 		LoggerObject logs;
 		logs = LoggerObject.getInstance();
 		logs.logDebug("Receiving message: " + input);
-		for (int i=0;i<result.size();i++) {
+		for (int i = 0; i < result.size(); i++) {
 			logs.logDebug("Receiving message: " + result.get(i));
 		}
 		return result;
@@ -371,6 +413,11 @@ public class XMLInterface {
 
 		String s = s1 + s33 + s2;
 
+		String s4 = "<RAMP><SUBRAMP><THEO><HALLO></HALLO></THEO>";
+		String s5 = "</SUBRAMP></RAMP>";
+
+		String tot = s4 + s + s5;
+
 		// String xslt1 = "<?xml version=\"1.0\"?>"
 		// +
 		// "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" >"
@@ -388,5 +435,10 @@ public class XMLInterface {
 		String xml1 = k.convertXmlString(s);
 		System.out.println(xml1);
 
+		System.out.println(tot);
+		xml1 = k.rampOff(s);
+		
+		System.out.println();
+		System.out.println(xml1);
 	}
 }
