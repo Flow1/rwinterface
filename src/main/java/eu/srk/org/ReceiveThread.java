@@ -23,6 +23,8 @@ import eu.srk.org.jms.JMSSender;
 class ReceiveThread extends Thread {
 	DataInputStream is;
 
+	final boolean MESSAGING = true;
+
 	boolean error = false;
 	JMSSender sender;
 	static LoggerObject logs;
@@ -36,7 +38,8 @@ class ReceiveThread extends Thread {
 
 		try {
 			Properties prop = new Properties();
-			InputStream inStream = new FileInputStream("src/main/resources/jms.properties");
+			InputStream inStream = new FileInputStream(
+					"src/main/resources/jms.properties");
 			prop.load(inStream);
 			sender = new JMSSender(prop);
 
@@ -55,9 +58,11 @@ class ReceiveThread extends Thread {
 
 	public void run() {
 		logs = LoggerObject.getInstance();
+		StatusRequest sr = StatusRequest.getInstance();
+		sr.getRequest();
 
 		socket = ServerSocketManagement.getInstance();
-//		prepareSender();
+		prepareSender();
 		error = false;
 		while (!error) {
 
@@ -80,11 +85,25 @@ class ReceiveThread extends Thread {
 							result = processReisGeselekteerd(is);
 						if (result != "")
 							result = XMLInterface.stringToXML(result);
-	//					try {
-	//						sender.sendMessage(result);
-	//					} catch (JMSException e) {
-	//						logs.logError(e.toString());
-	//					}
+						if (MESSAGING) {
+							try {
+								sender.sendMessage(result);
+							} catch (JMSException e) {
+								logs.logError(e.toString());
+							}
+						}
+
+						if (sr.getRequest()) {
+							sr.setRequest(false);
+							String res = sendInfoConnection();
+							if (MESSAGING) {
+								try {
+									sender.sendMessage(result);
+								} catch (JMSException e) {
+									logs.logError(e.toString());
+								}
+							}
+						}
 					} catch (IOException e) {
 						// Signal to reconnect
 						disconnect();
@@ -318,4 +337,20 @@ class ReceiveThread extends Thread {
 		return result;
 	}
 
+	// sendInfoConnection
+	public String sendInfoConnection() {
+		StatusRequest sr = StatusRequest.getInstance();
+		sr.getRequest();
+
+		String status = "";
+		if (error) {
+			status = "disconnected";
+		} else {
+			status = "connected";
+		}
+		String reply = "ReplyConnectionRequest;" + status;
+
+		return XMLInterface.stringToXML(reply);
+
+	}
 }

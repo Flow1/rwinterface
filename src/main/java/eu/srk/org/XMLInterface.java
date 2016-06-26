@@ -14,7 +14,9 @@
 // Note: change of data is only 1 record instead of all records
 // Note: discern track identification/change data is missing
 // Note: Video mode select is missing
-// Note: Request status on connection is implemented as an empty RW_Message
+// Note: Request for status on connection is now implemented as an empty RW_Message
+
+// Onramp has to be implemented
 
 package eu.srk.org;
 
@@ -112,13 +114,15 @@ public class XMLInterface {
 		xml1 = xml1 + xml;
 		xml1 = xml1 + "</RW_Message>";
 
+		xml1 = onRamp(xml1);
+
 		return xml1;
 	}
 
 	private String convertXmlString(String input) {
 
 		LoggerObject logs;
-		
+
 		String xsltn = "<?xml version=\"1.0\"?>"
 				+ "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" >"
 				+ "<xsl:output method=\"text\" omit-xml-declaration=\"yes\" indent=\"no\"/>"
@@ -141,28 +145,40 @@ public class XMLInterface {
 				+ "<xsl:value-of select=\"concat(TravelID,';',ShipLabel,';',ShipName,';',$SL,';',$SW,';',$SD,';',DPID,';',SeaVessel,';',Anchored,';',SpecialTransport,';',IMOVessel,';',PilotOnBoard,'&#xA;')\"/>"
 				+ "</xsl:template>" + "</xsl:stylesheet>";
 
-//		String xsltcn = "<?xml version=\"1.0\"?>"
-//				+ "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" >"
-//				+ "<xsl:output method=\"text\" omit-xml-declaration=\"yes\" indent=\"no\"/>"
-//				+ "<xsl:template match=\"TrackIdentification\">"
-//				+ "Change of travel data;1;"
-//				+ "<xsl:variable name=\"SL\" select=\"round(number(ShipLength) * 1024 div 1000)\"/>"
-//				+ "<xsl:variable name=\"SW\" select=\"round(number(ShipWidth) * 1024 div 1000)\"/>"
-//				+ "<xsl:variable name=\"SD\" select=\"round(number(ShipDraught) * 10)\"/>"
-//				+ "<xsl:value-of select=\"concat(TravelID,';',ShipLabel,';',$SL,';',$SW,';',$SD,';',,DPID,';',SeaVessel,';',Anchored,';',SpecialTransport,';',IMOVessel,';',PilotOnBoard,'&#xA;')\"/>"
-//				+ "</xsl:template>" + "</xsl:stylesheet>";
+		// String xsltcn = "<?xml version=\"1.0\"?>"
+		// +
+		// "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" >"
+		// +
+		// "<xsl:output method=\"text\" omit-xml-declaration=\"yes\" indent=\"no\"/>"
+		// + "<xsl:template match=\"TrackIdentification\">"
+		// + "Change of travel data;1;"
+		// +
+		// "<xsl:variable name=\"SL\" select=\"round(number(ShipLength) * 1024 div 1000)\"/>"
+		// +
+		// "<xsl:variable name=\"SW\" select=\"round(number(ShipWidth) * 1024 div 1000)\"/>"
+		// +
+		// "<xsl:variable name=\"SD\" select=\"round(number(ShipDraught) * 10)\"/>"
+		// +
+		// "<xsl:value-of select=\"concat(TravelID,';',ShipLabel,';',$SL,';',$SW,';',$SD,';',,DPID,';',SeaVessel,';',Anchored,';',SpecialTransport,';',IMOVessel,';',PilotOnBoard,'&#xA;')\"/>"
+		// + "</xsl:template>" + "</xsl:stylesheet>";
 
-//		String xsltce = "<?xml version=\"1.0\"?>"
-//				+ "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" >"
-//				+ "<xsl:output method=\"text\" omit-xml-declaration=\"yes\" indent=\"no\"/>"
-//				+ "<xsl:template match=\"TrackIdentification\">"
-//				+ "Change of travel data Extended;1;"
-//				+ "<xsl:variable name=\"SL\" select=\"round(number(ShipLength) * 1024 div 1000)\"/>"
-//				+ "<xsl:variable name=\"SW\" select=\"round(number(ShipWidth) * 1024 div 1000)\"/>"
-//				+ "<xsl:variable name=\"SD\" select=\"round(number(ShipDraught) *  10)\"/>"
-//				+ "<xsl:value-of select=\"concat(TravelID,';',ShipLabel,';',ShipName,';',$SL,';',$SW,';',$SD,';',DPID,';',SeaVessel,';',Anchored,';',SpecialTransport,';',IMOVessel,';',PilotOnBoard,'&#xA;')\"/>"
-//				+ "</xsl:template>" + "</xsl:stylesheet>";
-		
+		// String xsltce = "<?xml version=\"1.0\"?>"
+		// +
+		// "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" >"
+		// +
+		// "<xsl:output method=\"text\" omit-xml-declaration=\"yes\" indent=\"no\"/>"
+		// + "<xsl:template match=\"TrackIdentification\">"
+		// + "Change of travel data Extended;1;"
+		// +
+		// "<xsl:variable name=\"SL\" select=\"round(number(ShipLength) * 1024 div 1000)\"/>"
+		// +
+		// "<xsl:variable name=\"SW\" select=\"round(number(ShipWidth) * 1024 div 1000)\"/>"
+		// +
+		// "<xsl:variable name=\"SD\" select=\"round(number(ShipDraught) *  10)\"/>"
+		// +
+		// "<xsl:value-of select=\"concat(TravelID,';',ShipLabel,';',ShipName,';',$SL,';',$SW,';',$SD,';',DPID,';',SeaVessel,';',Anchored,';',SpecialTransport,';',IMOVessel,';',PilotOnBoard,'&#xA;')\"/>"
+		// + "</xsl:template>" + "</xsl:stylesheet>";
+
 		// Extended version to be used ?
 		boolean extended = false;
 		if (input.indexOf("ShipName") >= 0)
@@ -171,54 +187,58 @@ public class XMLInterface {
 			extended = false;
 		if (input.indexOf("ShipName></ShipName") >= 0)
 			extended = false;
-		
-		boolean csr=false;
+
+		boolean csr = false;
 		if (input.indexOf("RW_Message/>") >= 0)
-			csr= true;
+			csr = true;
 		if (input.indexOf("RW_Message><RW_Message") >= 0)
-			csr = true;	
+			csr = true;
 
 		String finalstring = "";
 		if (!csr) {
 
-		try {
-			DocumentBuilderFactory factory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			InputStream in = new ByteArrayInputStream(
-					input.getBytes(StandardCharsets.UTF_8));
+			try {
+				DocumentBuilderFactory factory = DocumentBuilderFactory
+						.newInstance();
+				DocumentBuilder builder = factory.newDocumentBuilder();
+				InputStream in = new ByteArrayInputStream(
+						input.getBytes(StandardCharsets.UTF_8));
 
-			String xslt = xsltn;
-			if (extended)
-				xslt = xslte;
+				String xslt = xsltn;
+				if (extended)
+					xslt = xslte;
 
-			InputStream ins = new ByteArrayInputStream(
-					xslt.getBytes(StandardCharsets.UTF_8));
-			Document document = builder.parse(in);
+				InputStream ins = new ByteArrayInputStream(
+						xslt.getBytes(StandardCharsets.UTF_8));
+				Document document = builder.parse(in);
 
-			StreamSource stylesource = new StreamSource(ins);
-			Transformer transformer = TransformerFactory.newInstance()
-					.newTransformer(stylesource);
-			Source source = new DOMSource(document);
-			StringWriter outWriter = new StringWriter();
-			StreamResult result = new StreamResult(outWriter);
+				StreamSource stylesource = new StreamSource(ins);
+				Transformer transformer = TransformerFactory.newInstance()
+						.newTransformer(stylesource);
+				Source source = new DOMSource(document);
+				StringWriter outWriter = new StringWriter();
+				StreamResult result = new StreamResult(outWriter);
 
-			transformer.transform(source, result);
-			StringBuffer sb = outWriter.getBuffer();
-			finalstring = sb.toString();
+				transformer.transform(source, result);
+				StringBuffer sb = outWriter.getBuffer();
+				finalstring = sb.toString();
 
-		} catch (Exception e) {
-			logs = LoggerObject.getInstance();
-			logs.logError(e.toString());
-		}
+			} catch (Exception e) {
+				logs = LoggerObject.getInstance();
+				logs.logError(e.toString());
+			}
 		} else {
-			finalstring="InfoConnectionRequest";
+			finalstring = "InfoConnectionRequest";
 		}
 
 		return finalstring;
 	}
 
-	
+	public static String onRamp(String input) {
+
+		return input;
+	}
+
 	public static String stringToXML(String input) {
 		// String
 		// input="PositionReport;Number of Travels;TravelID;XPos;YPOS;Request Additional Info; TravelID;XPos;YPOS;Request Additional Info";
@@ -227,29 +247,33 @@ public class XMLInterface {
 
 		XMLInterface t = new XMLInterface();
 		String result = t.convertStringXml(input);
-//		String result=input;
-		
+		// String result=input;
+
 		LoggerObject logs;
 		logs = LoggerObject.getInstance();
 		logs.logDebug("Receiving message: " + input);
 		logs.logDebug("Receiving message: " + result);
-		
+
 		return result;
 	}
 
 	public static String xmlToString(String input) {
 
-//		XMLInterface t = new XMLInterface();
-//		String result = t.convertXmlString(input);
-		String result=input;
-		
+		String result = "";
+
+		// If not xml, then it is testcase
+		if (input.startsWith("<")) {
+			XMLInterface t = new XMLInterface();
+			result = t.convertXmlString(input);
+		} else {
+			result = input;
+		}
 		LoggerObject logs;
 		logs = LoggerObject.getInstance();
 		logs.logDebug("Intended Sending message: " + input);
-		
 		return result;
 	}
-	
+
 	public static void main(String[] args) {
 
 		// String
@@ -257,7 +281,7 @@ public class XMLInterface {
 		// String input="TravelSelected;TravelID;DPiD";
 		// String input = "ReplyConnectionRequest;connected";
 
-		XMLInterface k = new XMLInterface();
+		// XMLInterface k = new XMLInterface();
 		// String xml = k.convertStringXml(input);
 		// System.out.println(xml);
 
@@ -276,7 +300,7 @@ public class XMLInterface {
 				+ "<TravelID>1205160002</TravelID>\n"
 				+ "<ShipLabel>JAANTJE         </ShipLabel>\n"
 				+ "<ShipName>JAANTJE</ShipName>\n";
-		
+
 		String s31 = "<Anchored>true</Anchored>\n" + "<DPID>234</DPID>\n"
 				+ "<IMOVessel>true</IMOVessel>\n"
 				+ "<PilotOnBoard>true</PilotOnBoard>\n"
@@ -309,20 +333,24 @@ public class XMLInterface {
 				+ "<ShipWidth>3434</ShipWidth>\n"
 				+ "<SpecialTransport>true</SpecialTransport>\n"
 				+ "<TravelID>1205160002</TravelID>\n"
-				+ "<ShipLabel>JAANTJE         </ShipLabel>\n"
-				+ "<ShipName/>\n";
-		
+				+ "<ShipLabel>JAANTJE         </ShipLabel>\n" + "<ShipName/>\n";
+
 		String s = s1 + s33 + s2;
 
-//		String xslt1 = "<?xml version=\"1.0\"?>"
-//				+ "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" >"
-//				+ "<xsl:output method=\"text\" omit-xml-declaration=\"yes\" indent=\"no\"/>"
-//				+ "<xsl:template match=\"/\">"
-//				+ "Anchored,DPID,IMOVessel,PilotOnBoard,SeaVessel,ShipDraught,ShipLength,ShipWidth,SpecialTransport,TravelID,ShipLabel,ShipName"
-//				+ "<xsl:for-each select=\"//TrackIdentification\">"
-//				+ "<xsl:value-of select=\"concat(Anchored,';',DPID,';',IMOVessel,';',PilotOnBoard,';',SeaVessel,';',ShipDraught,';',ShipLength,';',ShipWidth,';',SpecialTransport,';',TravelID,';',ShipLabel,';',ShipName,'&#xA;')\"/>"
-//				+ "</xsl:for-each>" + "</xsl:template>" + "</xsl:stylesheet>";
+		// String xslt1 = "<?xml version=\"1.0\"?>"
+		// +
+		// "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" >"
+		// +
+		// "<xsl:output method=\"text\" omit-xml-declaration=\"yes\" indent=\"no\"/>"
+		// + "<xsl:template match=\"/\">"
+		// +
+		// "Anchored,DPID,IMOVessel,PilotOnBoard,SeaVessel,ShipDraught,ShipLength,ShipWidth,SpecialTransport,TravelID,ShipLabel,ShipName"
+		// + "<xsl:for-each select=\"//TrackIdentification\">"
+		// +
+		// "<xsl:value-of select=\"concat(Anchored,';',DPID,';',IMOVessel,';',PilotOnBoard,';',SeaVessel,';',ShipDraught,';',ShipLength,';',ShipWidth,';',SpecialTransport,';',TravelID,';',ShipLabel,';',ShipName,'&#xA;')\"/>"
+		// + "</xsl:for-each>" + "</xsl:template>" + "</xsl:stylesheet>";
 
+		XMLInterface k = new XMLInterface();
 		String xml1 = k.convertXmlString(s);
 		System.out.println(xml1);
 

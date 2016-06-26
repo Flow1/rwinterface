@@ -28,6 +28,7 @@ import eu.srk.org.jms.JMSConsumer;
 class SubmitTestRequests extends Thread {
 
 	static LoggerObject logs;
+	final boolean MESSAGING = true;
 
 	public SubmitTestRequests() {
 	}
@@ -48,18 +49,24 @@ class SubmitTestRequests extends Thread {
 		String travelID = "105160001";
 		String dpID = "45";
 
-		String exampleVideoMode1 = "Video Mode Select;" + travelID + ";" + dpID + ";0";
-		String exampleVideoMode2 = "Video Mode Select;" + travelID + ";" + dpID + ";1";
+		String exampleVideoMode1 = "Video Mode Select;" + travelID + ";" + dpID
+				+ ";0";
+		String exampleVideoMode2 = "Video Mode Select;" + travelID + ";" + dpID
+				+ ";1";
 		String exampleChangeTravel1 = "Change of travel data;1;" + travelID
 				+ ";NEEL;20;15;124;12;true;false;true;true;false";
-		String exampleChangeTravel2 = "Change of travel data Extended;1;" + travelID
+		String exampleChangeTravel2 = "Change of travel data Extended;1;"
+				+ travelID
 				+ ";NEEL;NEELTJE JANS;20;15;124;12;true;false;true;true;false";
 		String exampleTrackID1 = "Track Identification Extended;" + travelID
 				+ ";NEEL;NEELTJE JANS;20;15;124;12;true;false;true;true;false";
-		String exampleTrackID2 = "Track Identification;" + travelID + ";NEEL;20;15;124;12;true;false;true;true;false";
-		String exampleTrackID3 = "Track Identification RIS;" + travelID
+		String exampleTrackID2 = "Track Identification;" + travelID
+				+ ";NEEL;20;15;124;12;true;false;true;true;false";
+		String exampleTrackID3 = "Track Identification RIS;"
+				+ travelID
 				+ ";NEEL;NEELTJE JANS VERY LONG NAME;20;15;124;100;200;300;15;true;false;true;true;false";
-		String exampleChangeTravel3 = "Change of travel data RIS;1;" + travelID
+		String exampleChangeTravel3 = "Change of travel data RIS;1;"
+				+ travelID
 				+ ";NEEL;NEELTJE JANS VERY LONG NAME;20;15;124;100;200;300;true;false;true;true;false";
 		String exampleConnection = "InfoConnectionRequest";
 
@@ -100,7 +107,8 @@ class SubmitTestRequests extends Thread {
 
 		try {
 			Properties prop = new Properties();
-			InputStream inStream = new FileInputStream("src/main/resources/jms.properties");
+			InputStream inStream = new FileInputStream(
+					"src/main/resources/jms.properties");
 			prop.load(inStream);
 			consumer = new JMSConsumer(prop, qu);
 		} catch (JMSException e) {
@@ -109,7 +117,7 @@ class SubmitTestRequests extends Thread {
 		} catch (java.net.ConnectException e) {
 			System.out.println("Here");
 			logs.logError(e.toString());
-			System.exit(0);			
+			System.exit(0);
 		} catch (FileNotFoundException e) {
 			logs.logError(e.toString());
 		} catch (IOException e) {
@@ -130,8 +138,11 @@ class SubmitTestRequests extends Thread {
 	public void run() {
 
 		SubmitTestRequests submitter = new SubmitTestRequests();
-		submitter.testRequests();
-		//submitter.messageRequests();
+		if (!MESSAGING) {
+			submitter.testRequests();
+		} else {
+			submitter.messageRequests();
+		}
 	}
 
 }

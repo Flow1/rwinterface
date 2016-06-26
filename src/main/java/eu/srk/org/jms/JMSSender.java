@@ -31,10 +31,8 @@ public class JMSSender {
 	private String userName;
 	private String password;
 
-	public JMSSender(Properties props) throws JMSException {
+	public JMSSender(Properties props) throws JMSException, java.net.ConnectException {
 		
-		System.out.println("Hallo");
-
 		brokerUrl = props.getProperty("jms_brokerurl");
 		queue = props.getProperty("jms_sender_queue");
 		userName = props.getProperty("jms_username");

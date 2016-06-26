@@ -107,7 +107,7 @@ class SendThread extends Thread {
 		} else if (parts[0].equals("Video Mode Select")) {
 			sendVideoMode(parts);
 		} else if (parts[0].equals("InfoConnectionRequest")) {
-			sendInfoConnection(parts);
+			sendInfoConnection();
 		} else {
 			logs.logInfo("Unknown command: " + parts[0]);
 		}
@@ -666,17 +666,8 @@ class SendThread extends Thread {
 	}
 
 	// sendInfoConnection
-	public void sendInfoConnection(String[] k) {
-
-		String status = "";
-		if (error) {
-			status = "disconnected";
-		} else {
-			status = "connected";
-		}
-		String reply = "ReplyConnectionRequest;" + status;
-
-		String result = XMLInterface.stringToXML(reply);
-
+	public void sendInfoConnection() {
+		StatusRequest sr = StatusRequest.getInstance();
+		sr.setRequest(true);
 	}
 }
