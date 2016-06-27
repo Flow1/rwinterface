@@ -65,6 +65,17 @@ class ReceiveThread extends Thread {
 		socket = ServerSocketManagement.getInstance();
 		prepareSender();
 		error = false;
+
+		// Signal connect
+		String res = sendInfoConnection().get(0);
+		if (MESSAGING) {
+			try {
+				sender.sendMessage(res);
+			} catch (JMSException e) {
+				logs.logError(e.toString());
+			}
+		}
+		
 		while (!error) {
 
 			is = socket.getDataInputStream();
@@ -96,17 +107,17 @@ class ReceiveThread extends Thread {
 							}
 						}
 
-						if (sr.getRequest()) {
-							sr.setRequest(false);
-							String res = sendInfoConnection().get(0);
-							if (MESSAGING) {
-								try {
-									sender.sendMessage(result);
-								} catch (JMSException e) {
-									logs.logError(e.toString());
-								}
-							}
-						}
+//						if (sr.getRequest()) {
+//							sr.setRequest(false);
+//							String res = sendInfoConnection().get(0);
+//							if (MESSAGING) {
+//								try {
+//									sender.sendMessage(result);
+//								} catch (JMSException e) {
+//									logs.logError(e.toString());
+//								}
+//							}
+//						}
 					} catch (IOException e) {
 						// Signal to reconnect
 						disconnect();
@@ -114,8 +125,19 @@ class ReceiveThread extends Thread {
 				}
 			}
 		}
+		
+		// Signal disconnect
+		res = sendInfoConnection().get(0);
+		if (MESSAGING) {
+			try {
+				sender.sendMessage(res);
+			} catch (JMSException e) {
+				logs.logError(e.toString());
+			}
+		}
 	}
 
+	
 	// Disconnect connection
 	public void disconnect() {
 		is = null;

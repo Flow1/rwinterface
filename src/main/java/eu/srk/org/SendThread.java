@@ -106,8 +106,8 @@ class SendThread extends Thread {
 			sendWijzigenInformatieRIS(parts);
 		} else if (parts[0].equals("Video Mode Select")) {
 			sendVideoMode(parts);
-		} else if (parts[0].equals("InfoConnectionRequest")) {
-			sendInfoConnection();
+//		} else if (parts[0].equals("InfoConnectionRequest")) {
+//			sendInfoConnection();
 		} else {
 			logs.logInfo("Unknown command: " + parts[0]);
 		}

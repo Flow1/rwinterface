@@ -97,7 +97,6 @@ public class XMLInterface {
 						+ "\">";
 				xml1 = xml1 + xml;
 				xml1 = xml1 + "</RW_Message>";
-				xml1 = onRamp(xml1);
 				list.add(xml1);
 			}
 		} else if (parts[0].equals("TravelSelected")) {
@@ -122,7 +121,6 @@ public class XMLInterface {
 			String xml1 = "<RW_Message Timestamp=\"" + convertedDate + "\">";
 			xml1 = xml1 + xml;
 			xml1 = xml1 + "</RW_Message>";
-			xml1 = onRamp(xml1);
 			list.add(xml1);
 
 		} else if (parts[0].equals("ReplyConnectionRequest")) {
@@ -145,7 +143,6 @@ public class XMLInterface {
 			String xml1 = "<RW_Message Timestamp=\"" + convertedDate + "\">";
 			xml1 = xml1 + xml;
 			xml1 = xml1 + "</RW_Message>";
-			xml1 = onRamp(xml1);
 			list.add(xml1);
 		}
 
@@ -260,14 +257,15 @@ public class XMLInterface {
 				logs = LoggerObject.getInstance();
 				logs.logError(e.toString());
 			}
-		} else {
-			finalstring = "InfoConnectionRequest";
+//		} else {
+//			finalstring = "InfoConnectionRequest";
 		}
 
 		return finalstring;
 	}
 
-	public String rampOff(String input) {
+	public String offRamp(String input) {
+		// Not used
 		LoggerObject logs;
 
 		String xslt = "<?xml version=\"1.0\"?>"
@@ -308,11 +306,6 @@ public class XMLInterface {
 		}
 
 		return finalstring;
-	}
-
-	public static String onRamp(String input) {
-
-		return input;
 	}
 
 	public static ArrayList<String> stringToXML(String input) {
@@ -413,11 +406,6 @@ public class XMLInterface {
 
 		String s = s1 + s33 + s2;
 
-		String s4 = "<RAMP><SUBRAMP><THEO><HALLO></HALLO></THEO>";
-		String s5 = "</SUBRAMP></RAMP>";
-
-		String tot = s4 + s + s5;
-
 		// String xslt1 = "<?xml version=\"1.0\"?>"
 		// +
 		// "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" >"
@@ -433,12 +421,6 @@ public class XMLInterface {
 
 		XMLInterface k = new XMLInterface();
 		String xml1 = k.convertXmlString(s);
-		System.out.println(xml1);
-
-		System.out.println(tot);
-		xml1 = k.rampOff(s);
-		
-		System.out.println();
 		System.out.println(xml1);
 	}
 }

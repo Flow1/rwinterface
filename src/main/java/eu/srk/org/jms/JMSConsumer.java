@@ -90,10 +90,8 @@ public class JMSConsumer implements MessageListener {
 				TextMessage text = (TextMessage) message;
 
 				XMLInterface translator = new XMLInterface();
-				String m=translator.rampOff(text.getText());
-				String ascii = translator.xmlToString(m);
+				String ascii = translator.xmlToString(text.getText());
 				qu.putQueue(ascii);
-				// System.out.println("Message is : " + text.getText());
 			}
 		} catch (JMSException e) {
 			e.printStackTrace();
