@@ -14,7 +14,6 @@ package eu.srk.org;
 
 import java.io.*;
 import java.lang.Thread;
-import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.jms.JMSException;
@@ -67,7 +66,7 @@ class ReceiveThread extends Thread {
 		error = false;
 
 		// Signal connect
-		String res = sendInfoConnection().get(0);
+		String res = sendInfoConnection();
 		if (MESSAGING) {
 			try {
 				sender.sendMessage(res);
@@ -96,17 +95,16 @@ class ReceiveThread extends Thread {
 						if (command == 105)
 							result = processReisGeselekteerd(is);
 						if (result != "") {
-							ArrayList<String> r = XMLInterface.stringToXML(result);
+							String r = XMLInterface.stringToXML(result);
 							if (MESSAGING) {
-								for (int i=0;i<r.size();i++)						
-							try {
-								sender.sendMessage(r.get(i));
+								try {
+								sender.sendMessage(r);
 							} catch (JMSException e) {
 								logs.logError(e.toString());
 							}
 							}
 						}
-
+						// If coming from incoming request: obsolete
 //						if (sr.getRequest()) {
 //							sr.setRequest(false);
 //							String res = sendInfoConnection().get(0);
@@ -127,7 +125,7 @@ class ReceiveThread extends Thread {
 		}
 		
 		// Signal disconnect
-		res = sendInfoConnection().get(0);
+		res = sendInfoConnection();
 		if (MESSAGING) {
 			try {
 				sender.sendMessage(res);
@@ -363,7 +361,7 @@ class ReceiveThread extends Thread {
 	}
 
 	// sendInfoConnection
-	public ArrayList<String> sendInfoConnection() {
+	public String sendInfoConnection() {
 		StatusRequest sr = StatusRequest.getInstance();
 		sr.getRequest();
 
@@ -374,8 +372,6 @@ class ReceiveThread extends Thread {
 			status = "connected";
 		}
 		String reply = "ReplyConnectionRequest;" + status;
-
-		return XMLInterface.stringToXML(reply);
-
+		return reply;
 	}
 }
