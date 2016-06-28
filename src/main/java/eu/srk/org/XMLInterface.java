@@ -86,7 +86,7 @@ public class XMLInterface {
 
 				String convertedDate = "";
 				GregorianCalendar gc = new GregorianCalendar(
-						TimeZone.getTimeZone("CET"));
+						TimeZone.getTimeZone("UTC"));
 				try {
 					convertedDate = DatatypeFactory.newInstance()
 							.newXMLGregorianCalendar(gc).toXMLFormat();
@@ -111,7 +111,7 @@ public class XMLInterface {
 
 			String convertedDate = "";
 			GregorianCalendar gc = new GregorianCalendar(
-					TimeZone.getTimeZone("CET"));
+					TimeZone.getTimeZone("UTC"));
 			try {
 				convertedDate = DatatypeFactory.newInstance()
 						.newXMLGregorianCalendar(gc).toXMLFormat();
@@ -133,7 +133,7 @@ public class XMLInterface {
 			xml = xml + "</ConnectionStatus>";
 			String convertedDate = "";
 			GregorianCalendar gc = new GregorianCalendar(
-					TimeZone.getTimeZone("CET"));
+					TimeZone.getTimeZone("UTC"));
 			try {
 				convertedDate = DatatypeFactory.newInstance()
 						.newXMLGregorianCalendar(gc).toXMLFormat();
@@ -422,5 +422,15 @@ public class XMLInterface {
 		XMLInterface k = new XMLInterface();
 		String xml1 = k.convertXmlString(s);
 		System.out.println(xml1);
+		
+		String convertedDate = "";
+		GregorianCalendar gc = new GregorianCalendar(
+				TimeZone.getTimeZone("UTC"));
+		try {
+			convertedDate = DatatypeFactory.newInstance()
+					.newXMLGregorianCalendar(gc).toXMLFormat();
+		} catch (DatatypeConfigurationException e) {
+		}
+		System.out.println(convertedDate);
 	}
 }
