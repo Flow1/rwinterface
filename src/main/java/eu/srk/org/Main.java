@@ -21,7 +21,7 @@ public class Main {
 	// #####################################################################################################################
 
 	public static void main(String[] args) {
-	
+	// a a
 		PropertiesObject props = PropertiesObject.getInstance();
 		props.loadProperties("src/main/resources/config.properties");
 

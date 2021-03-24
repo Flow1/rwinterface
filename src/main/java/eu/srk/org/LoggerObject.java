@@ -26,9 +26,11 @@ public class LoggerObject {
 		if (instance == null) {
 			instance = new LoggerObject();
 		}
-		return instance;
+		return instance ;
 	}
 
+	//hallo
+	
 	public void logDebug(String text) {
 		if (LOG.isInfoEnabled())
 			LOG.info("Debug: " + text);
