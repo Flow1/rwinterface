@@ -33,7 +33,7 @@ public class Main {
 
 		logs.logInfo("Start application: " + server + ":" + portListen + " "
 				+ portWrite);
-//dsd d
+//dsd d fgfgfg
 		if (server == null) {
 			logs.logError("Servername in properties not found");
 			System.exit(0);
